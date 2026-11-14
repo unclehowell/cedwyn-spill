@@ -20,7 +20,7 @@ function strip(){var up=d.querySelector(".ghf-v2-up");if(!up)return false;
  return true;}
 function both(){var a=num(),b=strip();return a&&b;}
 var n=0,iv=setInterval(function(){if(both()||++n>150){clearInterval(iv);var h=d.querySelector(".ghf-v2");
- if(h)new MutationObserver(both).observe(h,{childList:true,subtree:true,attributes:true,attributeFilter:["class","style"]);}},100);
+ if(h)new MutationObserver(both).observe(h,{childList:true,subtree:true,attributes:true,attributeFilter:["class","style"]});}},100);
 d.addEventListener("ghf-lang-change",function(){setTimeout(both,0);});
 })();
 
