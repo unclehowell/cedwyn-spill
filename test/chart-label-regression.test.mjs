@@ -3,9 +3,10 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const spill = readFileSync(new URL('../spill.js', import.meta.url), 'utf8');
-const start = spill.indexOf('function cols(id,rows){');
-const end = spill.indexOf('\n  var SC=', start);
-assert.ok(start >= 0 && end > start, 'chart columns renderer is present');
+const start = spill.indexOf('function cols(');
+assert.ok(start >= 0, 'chart columns renderer is present');
+const end = spill.indexOf('var SC=', start);
+assert.ok(end > start, 'chart renderer terminates before status configuration');
 
 const rendererSource = spill.slice(start, end);
 const nodes = new Map();
@@ -14,7 +15,7 @@ const lookup = id => {
   return nodes.get(id);
 };
 const escapeText = value => String(value == null ? '' : value).replace(/[&<>\"]/g, ch => ({
-  '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'
+  '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;'
 })[ch]);
 const renderColumns = new Function('$', 'esc', `${rendererSource}; return cols;`)(lookup, escapeText);
 
