@@ -41,7 +41,7 @@ test('selection is project-scoped and excludes private or unrelated material', (
 test('duplicate checks, provenance and source hashes precede catalogue writes', () => {
   assert.equal(contract.deduplication.check_before_write, true);
   assert.match(contract.deduplication.byte_hash, /SHA-256/);
-  assert.match(contract.workflow[2], /duplicates/);
+  assert.match(contract.workflow[2], /existing catalogue records/);
   assert.match(contract.workflow[4], /SHA-256/);
   assert.equal(contract.catalogue.repository, 'unclehowell/bucklerfamily-estate');
   assert.equal(contract.catalogue.schema_path, 'data/core/schema/core-record.schema.json');
