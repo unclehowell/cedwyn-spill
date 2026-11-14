@@ -1,0 +1,31 @@
+name: tag-and-bag-contract
+
+on:
+  push:
+    branches:
+      - pally/tag-and-bag-contract-2026-11-14
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'tag-and-bag.json'
+      - 'TAG-AND-BAG.md'
+      - 'llms.txt'
+      - 'index.html'
+      - 'protocol.json'
+      - 'test/tag-and-bag-contract.test.mjs'
+      - '.github/workflows/tag-and-bag-contract.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Validate tag+bag contract and safety boundaries
+        run: node --test test/tag-and-bag-contract.test.mjs

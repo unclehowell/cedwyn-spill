@@ -1,0 +1,66 @@
+{
+  "schema": "cedwyn_spill_tag_and_bag/v1",
+  "version": "1.0.0",
+  "name": "tag+bag",
+  "parent_protocol": "/spill/protocol.json",
+  "human_workflow": "/spill/TAG-AND-BAG.md",
+  "trigger": {
+    "phrases": ["tag+bag", "Tag+bag per bucklerfamily.estate/spill/"],
+    "distinct_from": "spill",
+    "purpose": "Preserve eligible source artifacts from this agent's accessible session in the central evidence catalogue, after rights, privacy, provenance and duplicate checks."
+  },
+  "execution_boundary": {
+    "actor": "The current agent executes the workflow manually using only sources and tools available to that agent.",
+    "session_access": "Only this agent's currently accessible conversation messages and attachments; never claim access to other or hidden chats.",
+    "worker_can_read_chat": false,
+    "worker_can_write_catalogue": false,
+    "worker_receives_github_credentials": false,
+    "spill_api_accepts_files": false,
+    "preserve_existing_spill": "The existing spill command remains facts-only and unchanged."
+  },
+  "eligibility": {
+    "project_scope": ["Great House Farm / Tŷ Mawr", "Cedwyn", "Llandough-juxta-Penarth and relevant project records"],
+    "candidate_artifacts": ["User-provided files", "Attachments visible in this session", "Cited source documents or URLs"],
+    "not_artifacts_by_default": ["Casual chat", "Plans", "Hypotheses", "Opinions", "Tool or prompt discussion"],
+    "owner_statement_rule": "If an owner statement is recorded, identify it as an owner statement, cite its accessible message and keep it distinct from documentary evidence.",
+    "exclude": ["Secrets, passwords, tokens or credentials", "Payment data", "Unrelated personal material", "Private or third-party correspondence without explicit public-release authority", "Personal data about living private people", "Material outside project scope", "Sources the agent cannot access or identify"]
+  },
+  "workflow": [
+    "Read the active bucklerfamily-estate repository guidance, current catalogue schema, relevant issue and branch state; never write to the retired cedwyn repository.",
+    "Retrieve the exact candidate artifact and record its source message or source URL and observed access date; if unavailable, report that exact dependency.",
+    "Search existing catalogue records by title and identifiers; when bytes are available, compute SHA-256 and compare file bytes before creating anything.",
+    "Check rights and public-release authority for the exact file, transcription and capture independently; do not infer permission or prohibition from the absence of a licence label.",
+    "Preserve unchanged original bytes only where public repository storage is authorized; record SHA-256, provenance, rights note, source/capture date and local path.",
+    "Create one current-schema catalogue record per distinct artifact, using separate description, transcript_status, transcript and interpretation fields and a local repository link where an authorized copy exists.",
+    "Use a real preview when available or an explicitly labelled placeholder; collapse faithful transcription by default below the description, preview and local file link; mark uncertain OCR; keep interpretation separate and evidence-bounded.",
+    "Work on a feature branch, read every write back, run available checks, and leave any PR unmerged and the production site unchanged pending the required preview and publication gate.",
+    "Report verified file and record URLs, hashes, test results, and each remaining artifact-specific blocker; never claim an unconfirmed write or invent a URL."
+  ],
+  "deduplication": {
+    "check_before_write": true,
+    "metadata_keys": ["title", "author", "date", "publisher", "DOI", "reference number", "source URL"],
+    "byte_hash": "SHA-256 of the exact retrieved bytes when available",
+    "duplicate_action": "Reuse the existing record and do not upload identical bytes as a new artifact.",
+    "unknown_bytes": "State that byte comparison was not possible; do not claim an exact-document match."
+  },
+  "catalogue": {
+    "repository": "unclehowell/bucklerfamily-estate",
+    "schema_path": "data/core/schema/core-record.schema.json",
+    "record_per_artifact": true,
+    "required_separation": ["description", "transcript_status", "transcript", "interpretation", "provenance", "links"],
+    "local_file_link": "Use the central repository copy only if that copy is authorized.",
+    "transcription": "Faithful, rights-permitted text; collapsed by default below description, preview and local file link; uncertain OCR marked explicitly.",
+    "interpretation": "Separate from transcription and limited to what cited evidence supports.",
+    "web_capture": "Record original source URL and capture timestamp; use a capture only when its reproduction is authorized."
+  },
+  "rights": {
+    "check_each_use": ["Repository copy", "Full transcription", "Web capture", "Preview image"],
+    "no_permission_inference_from_missing_license": true,
+    "when_unclear": "Do not publish the copy, full transcription or capture. Record a citation or metadata-only placeholder if the schema permits, then identify the rights-holder clarification needed."
+  },
+  "failure_reporting": {
+    "scope": "A failure blocks only the artifact or operation that depends on it; continue independent safe work.",
+    "required_fields": ["artifact or source", "observed failure", "blocked operation", "next authorized step", "verified results, if any"],
+    "forbidden_claims": ["Unverified upload", "Unverified catalogue record", "Unverified hash", "Invented preview URL", "Claimed access to an unavailable chat"]
+  }
+}

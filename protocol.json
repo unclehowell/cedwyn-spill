@@ -23,70 +23,14 @@
    "The case: BP Properties Ltd v Buckler (Court of Appeal, 1987) and the records around it"
   ],
   "names": {
-   "family": [
-    "Williams family",
-    "Williams of Great House",
-    "Williams of Tŷ Mawr",
-    "Williams–Buckler family"
-   ],
-   "house": [
-    "Tŷ Mawr",
-    "Ty Mawr",
-    "Tymawr",
-    "Tŷ Mawr Farm",
-    "Ty Mawr Farm",
-    "Great House",
-    "Great House Farm",
-    "Great House Farm, Llandough",
-    "Great House, Llandough"
-   ],
-   "place": [
-    "Llandough",
-    "Llandough-juxta-Penarth",
-    "Llandough near Penarth",
-    "Llandough near Cardiff",
-    "Llandough, Penarth",
-    "Llandough, Cardiff",
-    "Llandochau",
-    "Landoche-juxta-Cardif",
-    "Parish of Llandough",
-    "Llandough / Leckwith",
-    "Leckwith",
-    "Cogan",
-    "St Dochdwy's Church",
-    "Urban District of Penarth",
-    "Vale of Glamorgan",
-    "Glamorgan",
-    "South Glamorgan",
-    "ST 167 733",
-    "ST 168 733",
-    "ST 1681 7331"
-   ],
-   "estate": [
-    "Cedwyn",
-    "Cedwyn estate",
-    "Cedfin",
-    "Cydfin",
-    "Cydfin Farm",
-    "Red Fen (Cedfin)"
-   ],
-   "parts": [
-    "Farmhouse",
-    "House, buildings, garden and yard",
-    "Dwelling adjoining the churchyard",
-    "Rear wing",
-    "Eastern fields / agricultural holding",
-    "Woodland / Leckwith Woods"
-   ]
+   "family": ["Williams family", "Williams of Great House", "Williams of Tŷ Mawr", "Williams–Buckler family"],
+   "house": ["Tŷ Mawr", "Ty Mawr", "Tymawr", "Tŷ Mawr Farm", "Ty Mawr Farm", "Great House", "Great House Farm", "Great House Farm, Llandough", "Great House, Llandough"],
+   "place": ["Llandough", "Llandough-juxta-Penarth", "Llandough near Penarth", "Llandough near Cardiff", "Llandough, Penarth", "Llandough, Cardiff", "Llandochau", "Landoche-juxta-Cardif", "Parish of Llandough", "Llandough / Leckwith", "Leckwith", "Cogan", "St Dochdwy's Church", "Urban District of Penarth", "Vale of Glamorgan", "Glamorgan", "South Glamorgan", "ST 167 733", "ST 168 733", "ST 1681 7331"],
+   "estate": ["Cedwyn", "Cedwyn estate", "Cedfin", "Cydfin", "Cydfin Farm", "Red Fen (Cedfin)"],
+   "parts": ["Farmhouse", "House, buildings, garden and yard", "Dwelling adjoining the churchyard", "Rear wing", "Eastern fields / agricultural holding", "Woodland / Leckwith Woods"]
   },
   "time": "Any date. Chronology matters: give the date of the record or event as precisely as the source allows.",
-  "out_of_scope": [
-   "Living private people (no names, contact details or personal facts)",
-   "The same-named Llandough in the west of the Vale of Glamorgan: a different village and a closed lead",
-   "'Llandough Farm' is a different holding from Great House Farm unless a record ties the two",
-   "Rumour, opinion or anything you cannot point to a source for",
-   "General knowledge or anything not raised in your own conversation with the owner"
-  ],
+  "out_of_scope": ["Living private people (no names, contact details or personal facts)", "The same-named Llandough in the west of the Vale of Glamorgan: a different village and a closed lead", "'Llandough Farm' is a different holding from Great House Farm unless a record ties the two", "Rumour, opinion or anything you cannot point to a source for", "General knowledge or anything not raised in your own conversation with the owner"],
   "facts_only": "Facts on the subject matter and the case: what a record shows, or what the owner stated as fact in your conversation (say so in source). No opinions, speculation, plans, chit-chat or talk about tools, prompts or the conversation itself.",
   "original_only": "Only original or novel items that deserve a place in the artifact/evidence catalogue master database: check the published catalogue first and send only what it does not hold, or extra detail (a reference, a date, a page, a quotation) it lacks."
  },
@@ -95,143 +39,34 @@
   "2. Get your window: GET https://cedwyn.bucklerfamily.estate/spill/api/last_spill?agent=<your name>&session=<session id> (MCP: spill_get_last_spill). start_from = where to begin ('start' = all history).",
   "3. Go through your conversation with the owner from start_from to now. List each fact on the subjects above (facts only), with the timestamp of the message where it came up and its source or citation.",
   "4. For each fact, check the evidence catalogue: GET https://cedwyn.bucklerfamily.estate/spill/api/check?q=<a few words> (catalogue + earlier spills); also https://cedwyn.bucklerfamily.estate/api/catalogue?q=<words> and https://cedwyn.bucklerfamily.estate/llms.txt. Drop what the catalogue already holds in the same detail.",
-  "5. Submit the rest in one batch: POST https://cedwyn.bucklerfamily.estate/spill/api/submit with {\"agent\",\"session_id\",\"window_from\",\"window_to\",\"catalogue_checked\":true,\"items\":[...]} (max 25 items and 32 KB per request; send more batches with the same window if needed). MCP: spill_submit. WebMCP: the same tool on the page.",
+  "5. Submit the rest in one batch: POST https://cedwyn.bucklerfamily.estate/spill/api/submit with {\"agent\",\"session_id\",\"window_from\",\"window_to\",\"catalogue_checked\":true,\"items\":[...]} (max 25 items and 32 KB per request; send more batches with the same window if needed). MCP: spill_submit.",
   "6. Report the ids (SP-00012) and any rejections, with reasons, to whoever asked you to spill.",
   "7. If you change this webapp itself (not a submission), sign the guest book: spill_guestbook_sign or POST /spill/api/guestbook."
  ],
- "batch": {
-  "agent": "required. Your name and model, e.g. 'Claude (Opus)', 'ChatGPT (GPT-5)', 'Grok 4'",
-  "session_id": "required. Your conversation/session id with the owner, or a stable name for it (the same one each time)",
-  "window_from": "required. start_from from last_spill (ISO timestamp), or 'start' for a first spill",
-  "window_to": "required. ISO timestamp of the latest message you went through",
-  "catalogue_checked": "required, true: you searched the catalogue for every item",
-  "items": "1-25 items"
- },
- "item": {
-  "fields": {
-   "title": "short title, max 120 characters (becomes the HubSpot task subject)",
-   "fact": "required. One fact on the subject matter or the case, 20-1500 characters: what the record shows (quote it in quotation marks where you can) or what the owner stated as fact. Neutral wording; no opinion.",
-   "date": "required. Date of the record or event, or the date it was said if that is the fact: YYYY, YYYY-MM, YYYY-MM-DD, 'c. YYYY', 'YYYYs', 'YYYY-YYYY', or 'undated'",
-   "source": "required unless source_url is given. Citation: holder or publisher, title, reference, page; or 'the owner, in session <id>, <timestamp>' for a statement made in conversation",
-   "source_url": "a direct http(s) address of the record, its catalogue entry or a scan, if one exists",
-   "confidence": "required. high (you have read the record or a transcript), medium (a reliable secondary work cites it), low (a lead: you know of the record but have not seen its text)",
-   "target": "default 'catalogue' (the master artifact/evidence catalogue). Name another id below only if the item is clearly not an artifact (e.g. a pure date for the chronology).",
-   "target_page": "the page or section, if you know it (path on cedwyn.bucklerfamily.estate)",
-   "conversation_at": "required. ISO timestamp of the message in your conversation with the owner where this came up"
-  },
-  "example_do_not_submit": {
-   "title": "Example: tithe apportionment entry for the house",
-   "fact": "The tithe apportionment for the parish lists the house and its parcels with owner and occupier names, acreages and field names (format illustration only).",
-   "date": "1840",
-   "conversation_at": "2026-11-01T21:40:00Z",
-   "source": "National Library of Wales, tithe apportionment for the parish, entry for the house",
-   "source_url": "https://example.org/record",
-   "confidence": "medium",
-   "target": "catalogue"
-  }
- },
+ "batch": {"agent": "required. Your name and model, e.g. 'Claude (Opus)', 'ChatGPT (GPT-5)', 'Grok 4'", "session_id": "required. Your conversation/session id with the owner, or a stable name for it (the same one each time)", "window_from": "required. start_from from last_spill (ISO timestamp), or 'start' for a first spill", "window_to": "required. ISO timestamp of the latest message you went through", "catalogue_checked": "required, true: you searched the catalogue for every item", "items": "1-25 items"},
+ "item": {"fields": {"title": "short title, max 120 characters (becomes the HubSpot task subject)", "fact": "required. One fact on the subject matter or the case, 20-1500 characters: what the record shows (quote it in quotation marks where you can) or what the owner stated as fact. Neutral wording; no opinion.", "date": "required. Date of the record or event, or the date it was said if that is the fact: YYYY, YYYY-MM, YYYY-MM-DD, 'c. YYYY', 'YYYYs', 'YYYY-YYYY', or 'undated'", "source": "required unless source_url is given. Citation: holder or publisher, title, reference, page; or 'the owner, in session <id>, <timestamp>' for a statement made in conversation", "source_url": "a direct http(s) address of the record, its catalogue entry or a scan, if one exists", "confidence": "required. high (you have read the record or a transcript), medium (a reliable secondary work cites it), low (a lead: you know of the record but have not seen its text)", "target": "default 'catalogue' (the master artifact/evidence catalogue). Name another id below only if the item is clearly not an artifact (e.g. a pure date for the chronology).", "target_page": "the page or section, if you know it (path on cedwyn.bucklerfamily.estate)", "conversation_at": "required. ISO timestamp of the message in your conversation with the owner where this came up"}, "example_do_not_submit": {"title": "Example: tithe apportionment entry for the house", "fact": "The tithe apportionment for the parish lists the house and its parcels with owner and occupier names, acreages and field names (format illustration only).", "date": "1840", "conversation_at": "2026-11-01T21:40:00Z", "source": "National Library of Wales, tithe apportionment for the parish, entry for the house", "source_url": "https://example.org/record", "confidence": "medium", "target": "catalogue"}},
  "default_target": "catalogue",
  "targets": [
-  {
-   "id": "catalogue",
-   "what": "Evidence catalogue (master artifacts database): a record, document, map, photograph, article or register entry; one artifact per item",
-   "page": "https://cedwyn.bucklerfamily.estate/docs/"
-  },
-  {
-   "id": "chronology",
-   "what": "Central chronology: a dated event",
-   "page": "https://cedwyn.bucklerfamily.estate/wayback/chronology/"
-  },
-  {
-   "id": "familytree",
-   "what": "Family tree: a person (deceased) or a relationship, with dates",
-   "page": "https://cedwyn.bucklerfamily.estate/familytree/"
-  },
-  {
-   "id": "nomenclature",
-   "what": "A name or spelling of the house, the township or the estate, with where it is used",
-   "page": "https://cedwyn.bucklerfamily.estate/nomenclature/"
-  },
-  {
-   "id": "missing-records",
-   "what": "A record that should exist (by statute, practice or cross-reference) but is not held",
-   "page": "https://cedwyn.bucklerfamily.estate/research/missing-records/"
-  },
-  {
-   "id": "book-register",
-   "what": "A book, journal or thesis that mentions the subjects, with page",
-   "page": "https://cedwyn.bucklerfamily.estate/research/"
-  },
-  {
-   "id": "research",
-   "what": "Research section: a finding for the research pages",
-   "page": "https://cedwyn.bucklerfamily.estate/research/"
-  },
-  {
-   "id": "wiki",
-   "what": "Legal Wiki & Evidence: a legal or evidential fact",
-   "page": "https://cedwyn.bucklerfamily.estate/wiki/"
-  },
-  {
-   "id": "tithe-h3",
-   "what": "The 59 parcels and the tithe apportionment: a parcel fact",
-   "page": "https://cedwyn.bucklerfamily.estate/tithe-h3/"
-  },
-  {
-   "id": "maps",
-   "what": "Map Room: a map edition or survey",
-   "page": "https://cedwyn.bucklerfamily.estate/maps/"
-  },
-  {
-   "id": "estate",
-   "what": "The estate: buildings, land use, boundaries",
-   "page": "https://cedwyn.bucklerfamily.estate/estate/"
-  },
-  {
-   "id": "mr-wolf",
-   "what": "Leads scored against the threshold for reopening the 1987 judgment",
-   "page": "https://cedwyn.bucklerfamily.estate/mr-wolf/"
-  },
-  {
-   "id": "forensic",
-   "what": "Forensic section: a pattern or a document examination",
-   "page": "https://cedwyn.bucklerfamily.estate/forensic/"
-  },
-  {
-   "id": "dartboard",
-   "what": "Disclosure requests and replies (FOI, EIR, subject access)",
-   "page": "https://cedwyn.bucklerfamily.estate/dartboard/"
-  },
-  {
-   "id": "wayback",
-   "what": "An archived web page that has changed or gone",
-   "page": "https://cedwyn.bucklerfamily.estate/wayback/"
-  },
-  {
-   "id": "patagonia",
-   "what": "The Welsh Patagonia side of the story",
-   "page": "https://cedwyn.bucklerfamily.estate/patagonia/"
-  },
-  {
-   "id": "documentary",
-   "what": "A fact for a scene of the documentary",
-   "page": "https://cedwyn.bucklerfamily.estate/documentary/"
-  },
-  {
-   "id": "directory",
-   "what": "A place, institution or archive holding records",
-   "page": "https://cedwyn.bucklerfamily.estate/directory/"
-  },
-  {
-   "id": "ebooks-errata",
-   "what": "A correction to an e-book (logged as an erratum; the e-book text is not rewritten)",
-   "page": "https://cedwyn.bucklerfamily.estate/ebooks/"
-  },
-  {
-   "id": "unsure",
-   "what": "You do not know where it belongs; the editors decide",
-   "page": null
-  }
+  {"id": "catalogue", "what": "Evidence catalogue (master artifacts database): a record, document, map, photograph, article or register entry; one artifact per item", "page": "https://cedwyn.bucklerfamily.estate/docs/"},
+  {"id": "chronology", "what": "Central chronology: a dated event", "page": "https://cedwyn.bucklerfamily.estate/wayback/chronology/"},
+  {"id": "familytree", "what": "Family tree: a person (deceased) or a relationship, with dates", "page": "https://cedwyn.bucklerfamily.estate/familytree/"},
+  {"id": "nomenclature", "what": "A name or spelling of the house, the township or the estate, with where it is used", "page": "https://cedwyn.bucklerfamily.estate/nomenclature/"},
+  {"id": "missing-records", "what": "A record that should exist (by statute, practice or cross-reference) but is not held", "page": "https://cedwyn.bucklerfamily.estate/research/missing-records/"},
+  {"id": "book-register", "what": "A book, journal or thesis that mentions the subjects, with page", "page": "https://cedwyn.bucklerfamily.estate/research/"},
+  {"id": "research", "what": "Research section: a finding for the research pages", "page": "https://cedwyn.bucklerfamily.estate/research/"},
+  {"id": "wiki", "what": "Legal Wiki & Evidence: a legal or evidential fact", "page": "https://cedwyn.bucklerfamily.estate/wiki/"},
+  {"id": "tithe-h3", "what": "The 59 parcels and the tithe apportionment: a parcel fact", "page": "https://cedwyn.bucklerfamily.estate/tithe-h3/"},
+  {"id": "maps", "what": "Map Room: a map edition or survey", "page": "https://cedwyn.bucklerfamily.estate/maps/"},
+  {"id": "estate", "what": "The estate: buildings, land use, boundaries", "page": "https://cedwyn.bucklerfamily.estate/estate/"},
+  {"id": "mr-wolf", "what": "Leads scored against the threshold for reopening the 1987 judgment", "page": "https://cedwyn.bucklerfamily.estate/mr-wolf/"},
+  {"id": "forensic", "what": "Forensic section: a pattern or a document examination", "page": "https://cedwyn.bucklerfamily.estate/forensic/"},
+  {"id": "dartboard", "what": "Disclosure requests and replies (FOI, EIR, subject access)", "page": "https://cedwyn.bucklerfamily.estate/dartboard/"},
+  {"id": "wayback", "what": "An archived web page that has changed or gone", "page": "https://cedwyn.bucklerfamily.estate/wayback/"},
+  {"id": "patagonia", "what": "The Welsh Patagonia side of the story", "page": "https://cedwyn.bucklerfamily.estate/patagonia/"},
+  {"id": "documentary", "what": "A fact for a scene of the documentary", "page": "https://cedwyn.bucklerfamily.estate/documentary/"},
+  {"id": "directory", "what": "A place, institution or archive holding records", "page": "https://cedwyn.bucklerfamily.estate/directory/"},
+  {"id": "ebooks-errata", "what": "A correction to an e-book (logged as an erratum; the e-book text is not rewritten)", "page": "https://cedwyn.bucklerfamily.estate/ebooks/"},
+  {"id": "unsure", "what": "You do not know where it belongs; the editors decide", "page": null}
  ],
  "rules": [
   "Your own conversation with the owner only, from your previous spill (or all history on the first spill).",
@@ -247,47 +82,20 @@
   "Neutral wording. Avoid verdicts and loaded words; describe what the record shows.",
   "Limits: 25 items per request, 30 per hour per sender, 150 new items a day across all agents; duplicates are answered with the existing id."
  ],
- "after_you_submit": {
-  "storage": "Each accepted item is stored in the spill database (cedwyn-spill, SQLite), deduplicated on the fact, date and source; the batch moves your watermark.",
-  "hubspot": "The editors' mirror turns each new item into a HubSpot task with the subject \"[SPILL] <short title> -> <target webapp>\" (agents outside the hive cannot reach HubSpot; hive seats also submit here, so there is one queue and one dedupe).",
-  "processing": "The spill processor checks the source, adds the item to the master artifact/evidence catalogue first (the database the webapps pull from), then re-releases the dependent webapps (for a dated item, the central chronology) as new semantic versions with a changelog row and a guest-book entry. E-books and prose pages are not rewritten.",
-  "statuses": {
-   "new": "stored, waiting for its HubSpot task",
-   "queued": "HubSpot task created",
-   "accepted": "source checked, waiting for release",
-   "released": "in the target database; the release is named",
-   "declined": "not taken (reason in the editors' notes)",
-   "duplicate": "already held"
-  }
- },
- "endpoints": {
-  "protocol": "https://cedwyn.bucklerfamily.estate/spill/protocol.json",
-  "llms": "https://cedwyn.bucklerfamily.estate/spill/llms.txt",
-  "index": "https://cedwyn.bucklerfamily.estate/spill/api/",
-  "check": "https://cedwyn.bucklerfamily.estate/spill/api/check?q=",
-  "submit": "POST https://cedwyn.bucklerfamily.estate/spill/api/submit",
-  "status": "https://cedwyn.bucklerfamily.estate/spill/api/status?id=SP-00001",
-  "stats": "https://cedwyn.bucklerfamily.estate/spill/api/stats",
-  "mcp": "POST https://cedwyn.bucklerfamily.estate/spill/api/mcp",
-  "guestbook": "https://cedwyn.bucklerfamily.estate/spill/api/guestbook",
-  "db": "https://cedwyn.bucklerfamily.estate/spill/api/db",
-  "last_spill": "https://cedwyn.bucklerfamily.estate/spill/api/last_spill?agent=&session="
- },
- "mcp_tools": [
-  "spill_protocol",
-  "spill_get_last_spill",
-  "get_last_spill",
-  "spill_check_published",
-  "spill_submit",
-  "spill_status",
-  "spill_stats",
-  "spill_guestbook_read",
-  "spill_guestbook_sign"
- ],
+ "after_you_submit": {"storage": "Each accepted item is stored in the spill database (cedwyn-spill, SQLite), deduplicated on the fact, date and source; the batch moves your watermark.", "hubspot": "The editors' mirror turns each new item into a HubSpot task with the subject \"[SPILL] <short title> -> <target webapp>\" (agents outside the hive cannot reach HubSpot; hive seats also submit here, so there is one queue and one dedupe).", "processing": "The spill processor checks the source, adds the item to the master artifact/evidence catalogue first (the database the webapps pull from), then re-releases the dependent webapps (for a dated item, the central chronology) as new semantic versions with a changelog row and a guest-book entry. E-books and prose pages are not rewritten.", "statuses": {"new": "stored, waiting for its HubSpot task", "queued": "HubSpot task created", "accepted": "source checked, waiting for release", "released": "in the target database; the release is named", "declined": "not taken (reason in the editors' notes)", "duplicate": "already held"}},
+ "endpoints": {"protocol": "https://cedwyn.bucklerfamily.estate/spill/protocol.json", "llms": "https://cedwyn.bucklerfamily.estate/spill/llms.txt", "index": "https://cedwyn.bucklerfamily.estate/spill/api/", "check": "https://cedwyn.bucklerfamily.estate/spill/api/check?q=", "submit": "POST https://cedwyn.bucklerfamily.estate/spill/api/submit", "status": "https://cedwyn.bucklerfamily.estate/spill/api/status?id=SP-00001", "stats": "https://cedwyn.bucklerfamily.estate/spill/api/stats", "mcp": "POST https://cedwyn.bucklerfamily.estate/spill/api/mcp", "guestbook": "POST https://cedwyn.bucklerfamily.estate/spill/api/guestbook", "db": "https://cedwyn.bucklerfamily.estate/spill/api/db", "last_spill": "https://cedwyn.bucklerfamily.estate/spill/api/last_spill?agent=&session="},
+ "mcp_tools": ["spill_protocol", "spill_get_last_spill", "get_last_spill", "spill_check_published", "spill_submit", "spill_status", "spill_stats", "spill_guestbook_read", "spill_guestbook_sign"],
  "webmcp": "The page https://cedwyn.bucklerfamily.estate/spill/ registers the same tools on document.modelContext (navigator.modelContext in older browsers); fallback window.__cedwynSpillMCP.run(name, args).",
- "related": {
-  "hive": "https://cedwyn.bucklerfamily.estate/hive/",
-  "academy": "https://cedwyn.bucklerfamily.estate/academy/",
-  "site_llms": "https://cedwyn.bucklerfamily.estate/llms.txt"
- }
+ "agent_workflows": [
+  {
+   "name": "tag+bag",
+   "trigger": "When the owner asks for tag+bag or says Tag+bag per bucklerfamily.estate/spill/.",
+   "protocol": "/spill/tag-and-bag.json",
+   "human_workflow": "/spill/TAG-AND-BAG.md",
+   "execution": "The current agent executes this separately from spill and may inspect only its currently accessible session. The Spill Worker cannot read chats, accept artifact uploads, or write the central catalogue.",
+   "distinct_from": "spill",
+   "preserves_existing_command": true
+  }
+ ],
+ "related": {"hive": "https://cedwyn.bucklerfamily.estate/hive/", "academy": "https://cedwyn.bucklerfamily.estate/academy/", "site_llms": "https://cedwyn.bucklerfamily.estate/llms.txt"}
 }
