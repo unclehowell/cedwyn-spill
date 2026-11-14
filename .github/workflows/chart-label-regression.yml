@@ -1,0 +1,27 @@
+name: Mobile chart label regression
+
+on:
+  push:
+    branches:
+      - pally/mobile-chart-labels-2026-11-14
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'spill.js'
+      - 'test/chart-label-regression.test.mjs'
+      - '.github/workflows/chart-label-regression.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  chart-label-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Check chart edge anchors and single-item centering
+        run: node --test test/chart-label-regression.test.mjs
