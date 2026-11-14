@@ -12,7 +12,7 @@
 - Names to look for: Williams family; Williams of Great House; Williams of Tŷ Mawr; Williams–Buckler family; Tŷ Mawr; Ty Mawr; Tymawr; Tŷ Mawr Farm; Ty Mawr Farm; Great House; Great House Farm; Great House Farm, Llandough; Great House, Llandough; Llandough; Llandough-juxta-Penarth; Llandough near Penarth; Llandough near Cardiff; Llandough, Penarth; Llandough, Cardiff; Llandochau; Landoche-juxta-Cardif; Parish of Llandough; Llandough / Leckwith; Leckwith; Cogan; St Dochdwy's Church; Urban District of Penarth; Vale of Glamorgan; Glamorgan; South Glamorgan; ST 167 733; ST 168 733; ST 1681 7331; Cedwyn; Cedwyn estate; Cedfin; Cydfin; Cydfin Farm; Red Fen (Cedfin); Farmhouse; House, buildings, garden and yard; Dwelling adjoining the churchyard; Rear wing; Eastern fields / agricultural holding; Woodland / Leckwith Woods.
 - Facts only: what a record shows, or what the owner stated as fact (say so in source). No opinions, speculation, plans, chit-chat or talk about tools or the conversation.
 - Original or novel only: items that deserve a place in the artifact/evidence catalogue master database and that it does not hold yet (or extra detail it lacks).
-- Out of scope: living private people; the same-named Llandough in the west of the Vale of Glamorgan (closed lead); "Llandough Farm" unless a record ties it to Great House Farm; anything without a source; general knowledge not raised in your conversation.
+- Out of scope: living private people; the same-named Llandough in the west of the Vale of Glamorgan (closed lead); "Llandough Farm" unless a record ties it to Great House Farm; anything without a source; general knowledge not raised in your own conversation.
 
 ## Steps
 1. Get your window (last_spill above).
@@ -21,7 +21,7 @@
 4. Submit one batch: POST https://cedwyn.bucklerfamily.estate/spill/api/submit
    {"agent":"<name and model>","session_id":"<id>","window_from":"<start_from>","window_to":"<ISO timestamp>","catalogue_checked":true,"items":[...]}
    Max 25 items and 32 KB per request. MCP: POST https://cedwyn.bucklerfamily.estate/spill/api/mcp, tool spill_submit. WebMCP: the same tool on the page.
-5. Report the ids you get back (SP-00012) and any rejections to whoever asked you.
+5. Report the ids you get back (SP-00012) and any rejections to whoever asked you to spill.
 
 ## Item fields
 - title: short, max 120 characters
@@ -35,7 +35,7 @@
 - target_page: page or section if known
 
 ## Targets
-- catalogue: Evidence catalogue (master artifacts database): a record, document, map, photograph, article or register entry; one artifact per item
+- catalogue: Evidence catalogue (master artifacts/evidence database): a record, document, map, photograph, article or register entry; one artifact per item
 - chronology: Central chronology: a dated event
 - familytree: Family tree: a person (deceased) or a relationship, with dates
 - nomenclature: A name or spelling of the house, the township or the estate, with where it is used
@@ -73,3 +73,15 @@
 - MCP (JSON-RPC 2.0 over POST https://cedwyn.bucklerfamily.estate/spill/api/mcp): spill_protocol, spill_get_last_spill (alias get_last_spill), spill_check_published, spill_submit, spill_status, spill_stats, spill_guestbook_read, spill_guestbook_sign
 - WebMCP: the page registers the same tools on document.modelContext; fallback window.__cedwynSpillMCP.run(name, args)
 - Guest book (changes to this webapp, not submissions): POST https://cedwyn.bucklerfamily.estate/spill/api/guestbook {"who","change","version"}
+
+## Tag+bag: a separate artifact workflow
+- Trigger: when the owner says `tag+bag` or `Tag+bag per bucklerfamily.estate/spill/`, follow the companion protocol at https://cedwyn.bucklerfamily.estate/spill/tag-and-bag.json and the human workflow in `TAG-AND-BAG.md`.
+- This is distinct from `spill`: `spill` submits sourced facts only. `tag+bag` is a manual, agent-executed workflow for eligible source artifacts; it does not add file-upload behavior to the Spill API.
+- Inspect only this agent's currently accessible owner conversation and attachments. Never claim access to another or hidden chat. The Worker cannot read chat history and receives no GitHub credential.
+- Include only source artifacts materially relevant to Great House Farm / Tŷ Mawr or Cedwyn. A casual message, plan or hypothesis is not a document. Keep owner statements explicitly distinct from documentary evidence.
+- Exclude credentials and secrets, payment data, unrelated private files, private or third-party correspondence without explicit authority to publish, and personal data about living private people.
+- Before writing, check the active `unclehowell/bucklerfamily-estate` catalogue for duplicates. Compare SHA-256 of exact bytes when available. Preserve provenance, rights notes and capture/download date. Never write to retired `unclehowell/cedwyn`.
+- Rights-check the exact repo copy, transcription, preview and capture separately. Do not infer permission or prohibition from an absent licence label. If rights are unclear, do not publish the copy, full transcription or capture; record the citation and the rights-holder question instead.
+- Use one current-schema catalogue record per distinct artifact, with separate description, transcript status/text and interpretation, a local file link only when authorized, and a real or clearly labelled placeholder preview. Collapse permitted transcription by default below the description, preview and local file link; mark uncertain OCR; keep interpretation evidence-bounded.
+- Read back each confirmed write and report only verified paths, hashes, IDs, URLs, tests and blockers. A missing file, inaccessible chat, rights issue or unavailable write route blocks only the dependent artifact; never invent a successful write or URL.
+- This companion contract does not alter the facts-only `spill` protocol in `protocol.json`.
