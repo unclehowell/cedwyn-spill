@@ -18,6 +18,11 @@ test('tag+bag has its own explicit trigger and is surfaced to people and agents'
   assert.match(page, /Tag\+bag per bucklerfamily\.estate\/spill\//);
   assert.match(page, /tag-and-bag\.json/);
   assert.match(workflow, /## Trigger and access boundary/);
+  const advertisedWorkflow = spillProtocol.agent_workflows?.find((item) => item.name === 'tag+bag');
+  assert.ok(advertisedWorkflow, 'protocol.json must advertise the separate tag+bag workflow');
+  assert.equal(advertisedWorkflow.protocol, '/spill/tag-and-bag.json');
+  assert.equal(advertisedWorkflow.distinct_from, 'spill');
+  assert.equal(advertisedWorkflow.preserves_existing_command, true);
 });
 
 test('only the current agent can inspect accessible chat; the Worker gets no chat or credentials', () => {
@@ -58,7 +63,10 @@ test('rights, collapsed transcription and separate interpretation are explicit',
 
 test('existing Spill remains a facts-only endpoint protocol', () => {
   assert.match(spillProtocol.meaning, /Facts only/);
+  assert.match(spillProtocol.command, /instruction to 'spill'/i);
+  assert.doesNotMatch(spillProtocol.command, /tag\+bag/i);
   assert.ok(spillProtocol.mcp_tools.includes('spill_submit'));
+  assert.ok(!spillProtocol.mcp_tools.some((name) => /tag.*bag/i.test(name)));
   assert.equal(contract.execution_boundary.preserve_existing_spill, 'The existing spill command remains facts-only and unchanged.');
   assert.match(page, /does not change the facts-only/);
 });
