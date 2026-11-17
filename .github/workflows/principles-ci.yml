@@ -1,0 +1,24 @@
+name: spill-principles-ci
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'protocol.json'
+      - 'llms.txt'
+      - 'worker/index.js'
+      - 'test/**'
+      - '.github/workflows/principles-ci.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Test protocol, MCP contract and Worker syntax
+        run: node --test test/operating-principles.test.mjs
