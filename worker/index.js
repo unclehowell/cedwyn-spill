@@ -8,7 +8,9 @@ import ASSETS from './assets.js';
 // to the target webapp's database and re-releases that webapp's branch. Free plan only. - Cedwyn editors
 
 const VERSION = '1.2.0';
-const SPILL_OPERATING_PRINCIPLES = [{"name":"Rely on facts","rule":"Distinguish record, attributed statement, interpretation, inference and unknown; submit factual items only."},{"name":"Augment with AI","rule":"AI assists extraction and organisation; generated text is not evidence."},{"name":"Verify information","rule":"Check source identity, provenance, exact wording, date, scope and catalogue uniqueness; preserve uncertainty and contrary evidence."},{"name":"Analogue skills","rule":"Inspect original documents, scans, maps and physical records directly where possible; manually check transcription and references."},{"name":"Human connections","rule":"Respect human accounts, consent, privacy and collaboration; attribute owner statements accurately."},{"name":"Ethics","rule":"Exclude personal details and secrets, respect copyright and attribution, minimise data and preserve human accountability."}];
+// Keep MCP principles sourced from the same protocol JSON exposed to agents; do not maintain a second drifting copy.
+const SPILL_PROTOCOL = JSON.parse(ASSETS['protocol.json'].body);
+const SPILL_OPERATING_PRINCIPLES = SPILL_PROTOCOL.operating_principles;
 const SITE = 'https://cedwyn.bucklerfamily.estate';
 const DAY_CAP = 150;            // new items stored per UTC day (keeps writes under ~200/day)
 const HOUR_CAP_SENDER = 30;     // items per sender per hour (in-memory, no writes)
