@@ -1,7 +1,7 @@
 {
  "schema": "cedwyn_spill_protocol/v1",
- "version": "1.1.0",
- "updated": "2026-11-02",
+ "version": "1.2.0",
+ "updated": "2026-11-17",
  "name": "Spill",
  "webapp": "spill",
  "slot": "44 of 59",
@@ -289,5 +289,33 @@
   "hive": "https://cedwyn.bucklerfamily.estate/hive/",
   "academy": "https://cedwyn.bucklerfamily.estate/academy/",
   "site_llms": "https://cedwyn.bucklerfamily.estate/llms.txt"
- }
+ },
+ "operating_principles_url": "https://bucklerfamily.estate/FLYWHEELS/agent-principles.md",
+ "operating_principles": [
+  {
+   "name": "Rely on facts",
+   "rule": "Submit only factual statements supported by the record or explicitly attributed owner statements; distinguish source text, report, interpretation, inference and unknown."
+  },
+  {
+   "name": "Augment with AI",
+   "rule": "AI may assist extraction and organisation, but generated output is not evidence and every material detail must be checked against the source."
+  },
+  {
+   "name": "Verify information",
+   "rule": "Check source identity, provenance, exact wording, date, scope and catalogue uniqueness; preserve uncertainty and contrary information."
+  },
+  {
+   "name": "Analogue skills",
+   "rule": "Read and inspect originals, scans, maps and physical records directly where possible; do not let AI transcription or summaries replace source inspection."
+  },
+  {
+   "name": "Human connections",
+   "rule": "Respect human accounts, consent, privacy and collaboration; owner statements must be attributed as owner statements, not misrepresented as documentary records."
+  },
+  {
+   "name": "Ethics",
+   "rule": "Exclude private details and secrets, respect attribution and copyright, minimise data, and preserve human accountability."
+  }
+ ],
+ "operating_principles_note": "These principles supplement and do not broaden Spill scope. Existing source_window, facts_only, original_only, privacy and catalogue_checked rules remain mandatory."
 }
