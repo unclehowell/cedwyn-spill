@@ -8,6 +8,7 @@ import ASSETS from './assets.js';
 // to the target webapp's database and re-releases that webapp's branch. Free plan only. - Cedwyn editors
 
 const VERSION = '1.2.0';
+const SPILL_OPERATING_PRINCIPLES = [{"name":"Rely on facts","rule":"Distinguish record, attributed statement, interpretation, inference and unknown; submit factual items only."},{"name":"Augment with AI","rule":"AI assists extraction and organisation; generated text is not evidence."},{"name":"Verify information","rule":"Check source identity, provenance, exact wording, date, scope and catalogue uniqueness; preserve uncertainty and contrary evidence."},{"name":"Analogue skills","rule":"Inspect original documents, scans, maps and physical records directly where possible; manually check transcription and references."},{"name":"Human connections","rule":"Respect human accounts, consent, privacy and collaboration; attribute owner statements accurately."},{"name":"Ethics","rule":"Exclude personal details and secrets, respect copyright and attribution, minimise data and preserve human accountability."}];
 const SITE = 'https://cedwyn.bucklerfamily.estate';
 const DAY_CAP = 150;            // new items stored per UTC day (keeps writes under ~200/day)
 const HOUR_CAP_SENDER = 30;     // items per sender per hour (in-memory, no writes)
@@ -215,7 +216,7 @@ const TOOLS = [
 ];
 async function runTool(env, req, name, a) {
   a = a || {};
-  if (name === 'spill_protocol') return JSON.parse(ASSETS['protocol.json'].body);
+  if (name === 'spill_protocol') return Object.assign({}, JSON.parse(ASSETS['protocol.json'].body), { version: VERSION, operating_principles_url: 'https://bucklerfamily.estate/FLYWHEELS/agent-principles.md', operating_principles: SPILL_OPERATING_PRINCIPLES, operating_principles_note: 'These principles supplement and do not broaden Spill scope. Existing source_window, facts_only, original_only, privacy and catalogue_checked rules remain mandatory.' });
   if (name === 'spill_check_published') { const c = await checkPublished(a.q); c.spilled = (await (await doFetch(env, '/similar?q=' + encodeURIComponent(clip(a.q, 120)))).json()).hits; return c; }
   if (name === 'spill_get_last_spill' || name === 'get_last_spill') return await (await doFetch(env, '/last_spill?agent=' + encodeURIComponent(a.agent || '') + '&session=' + encodeURIComponent(a.session_id || ''))).json();
   if (name === 'spill_submit') return await (await doFetch(env, '/submit', { method: 'POST', body: JSON.stringify({ items: Array.isArray(a.items) ? a.items : [], batch: { agent: a.agent, session_id: a.session_id, window_from: a.window_from, window_to: a.window_to, catalogue_checked: a.catalogue_checked }, sender: await senderOf(req, env) }) })).json();
