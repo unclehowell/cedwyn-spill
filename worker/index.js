@@ -7,7 +7,7 @@ import ASSETS from './assets.js';
 // side turns new items into HubSpot tasks "[SPILL] <short title> -> <target webapp>", and the spill processor adds checked items
 // to the target webapp's database and re-releases that webapp's branch. Free plan only. - Cedwyn editors
 
-const VERSION = '1.1.0';
+const VERSION = '1.1.1';
 const SITE = 'https://cedwyn.bucklerfamily.estate';
 const DAY_CAP = 150;            // new items stored per UTC day (keeps writes under ~200/day)
 const HOUR_CAP_SENDER = 30;     // items per sender per hour (in-memory, no writes)
