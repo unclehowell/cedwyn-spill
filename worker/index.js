@@ -7,7 +7,7 @@ import ASSETS from './assets.js';
 // side turns new items into HubSpot tasks "[SPILL] <short title> -> <target webapp>", and the spill processor adds checked items
 // to the target webapp's database and re-releases that webapp's branch. Free plan only. - Cedwyn editors
 
-const VERSION = '1.1.1';
+const VERSION = '1.1.2';
 const SITE = 'https://cedwyn.bucklerfamily.estate';
 const DAY_CAP = 150;            // new items stored per UTC day (keeps writes under ~200/day)
 const HOUR_CAP_SENDER = 30;     // items per sender per hour (in-memory, no writes)
@@ -192,13 +192,39 @@ const doFetch = (env, path, init) => DB(env).fetch('https://spill.internal' + pa
 async function senderOf(req, env) { return (await sha((req.headers.get('cf-connecting-ip') || 'x') + '|' + (env.SPILL_ADMIN_KEY || 'salt') + '|' + new Date().toISOString().slice(0, 10))).slice(0, 16); }
 
 async function checkPublished(q) {
-  q = clip(q, 120); if (!q) return { error: 'q required' };
-  const out = { q, catalogue: [], chronology_url: SITE + '/wayback/chronology/chronology.json', search_pages: [SITE + '/docs/', SITE + '/sitemap.xml', SITE + '/llms.txt'] };
+  q = clip(q, 120); if (!q) return { error: 'q required', q: '', catalogue: [], catalogue_verified: false, spill_similarity_verified: false, eligible_to_submit: false };
+  const out = { q, catalogue: [], catalogue_verified: false, spill_similarity_verified: false, eligible_to_submit: false, chronology_url: SITE + '/wayback/chronology/chronology.json', search_pages: [SITE + '/docs/', SITE + '/sitemap.xml', SITE + '/llms.txt'] };
   try {
     const r = await fetch(SITE + '/api/catalogue?limit=10&q=' + encodeURIComponent(q), { cf: { cacheTtl: 300 } });
-    const j = await r.json(); out.catalogue_total = j.total; out.catalogue = (j.items || []).slice(0, 10).map(x => ({ id: x.id, kind: x.kind, title: x.title, date: x.date_display, page: x.page }));
-  } catch (e) { out.catalogue_error = 'catalogue search did not answer'; }
+    if (!r.ok) throw new Error('catalogue HTTP ' + r.status);
+    const j = await r.json();
+    if (!j || !Array.isArray(j.items) || !Number.isFinite(Number(j.total))) throw new Error('catalogue response malformed');
+    out.catalogue_total = Number(j.total);
+    out.catalogue = j.items.slice(0, 10).map(x => ({ id: x.id, kind: x.kind, title: x.title, date: x.date_display, page: x.page }));
+    out.catalogue_verified = true;
+  } catch (_) { out.catalogue_error = 'catalogue search did not answer'; }
   return out;
+}
+
+async function checkPublishedAndSpills(env, q) {
+  const c = await checkPublished(q);
+  c.spilled = [];
+  if (c.error) return c;
+  try {
+    const r = await doFetch(env, '/similar?q=' + encodeURIComponent(clip(q, 120)));
+    if (!r.ok) throw new Error('prior spill search HTTP ' + r.status);
+    const j = await r.json();
+    if (!j || !Array.isArray(j.hits)) throw new Error('prior spill response malformed');
+    c.spilled = j.hits;
+    c.spill_similarity_verified = true;
+  } catch (_) { c.spill_similarity_error = 'prior spill search did not answer'; }
+  c.eligible_to_submit = c.catalogue_verified === true
+    && c.spill_similarity_verified === true
+    && c.catalogue_total === 0
+    && c.catalogue.length === 0
+    && c.spilled.length === 0;
+  if (!c.eligible_to_submit) c.error = 'novelty checks incomplete or matching material found; do not submit';
+  return c;
 }
 
 const ITEM = { type: 'object', properties: { title: { type: 'string' }, fact: { type: 'string', description: 'one fact on the subject matter or the case, as said in your conversation with the owner or as the record shows; no opinion' }, date: { type: 'string', description: 'date of the record or event (YYYY, YYYY-MM, YYYY-MM-DD, c. YYYY, YYYYs, YYYY-YYYY, undated)' }, conversation_at: { type: 'string', description: 'ISO timestamp of the message in your conversation with the owner where this came up' }, source: { type: 'string', description: 'citation: holder, title, reference, page; or the owner\'s statement in your session' }, source_url: { type: 'string' }, confidence: { type: 'string', enum: ['high', 'medium', 'low'] }, target: { type: 'string', enum: TARGETS, description: 'default catalogue (the master artifact/evidence catalogue)' }, target_page: { type: 'string' } }, required: ['fact', 'date', 'conversation_at', 'confidence'] };
@@ -206,7 +232,7 @@ const TOOLS = [
   { name: 'spill_protocol', description: 'The spill protocol: source window (your own conversation with the owner since your last spill), scope, item format, rules.', inputSchema: { type: 'object', properties: {} } },
   { name: 'spill_get_last_spill', description: 'Where to start: your previous spill time and window end for this agent and session (first spill: go through all history). Call this first.', inputSchema: { type: 'object', properties: { agent: { type: 'string' }, session_id: { type: 'string' } }, required: ['agent'] } },
   { name: 'get_last_spill', description: 'Alias of spill_get_last_spill.', inputSchema: { type: 'object', properties: { agent: { type: 'string' }, session_id: { type: 'string' } }, required: ['agent'] } },
-  { name: 'spill_check_published', description: 'Search the published evidence catalogue (and earlier spills) before you submit; send only original or novel facts.', inputSchema: { type: 'object', properties: { q: { type: 'string', description: 'a few words: names, place, year, record type' } }, required: ['q'] } },
+  { name: 'spill_check_published', description: 'Search the published evidence catalogue and earlier spills before you submit. The result includes catalogue_verified, spill_similarity_verified and eligible_to_submit; submit only when eligible_to_submit is true. Any false/missing check or match means STOP.', inputSchema: { type: 'object', properties: { q: { type: 'string', description: 'a few words: names, place, year, record type' } }, required: ['q'] } },
   { name: 'spill_submit', description: 'Submit up to 25 original facts from your own conversation with the owner (window_from..window_to) that the evidence catalogue does not hold: Williams family, Tŷ Mawr / Great House Farm, the Cedwyn estate, BP Properties v Buckler. Facts only; each with a source or citation, its date and the conversation timestamp.', inputSchema: { type: 'object', properties: { agent: { type: 'string' }, session_id: { type: 'string' }, window_from: { type: 'string', description: 'ISO timestamp from spill_get_last_spill, or "start"' }, window_to: { type: 'string', description: 'ISO timestamp of the latest message you went through' }, catalogue_checked: { type: 'boolean', description: 'true: you searched the catalogue for every item' }, items: { type: 'array', maxItems: 25, items: ITEM } }, required: ['agent', 'session_id', 'window_from', 'window_to', 'catalogue_checked', 'items'] } },
   { name: 'spill_status', description: 'Status of a submitted item (new, queued, accepted, declined, released, duplicate).', inputSchema: { type: 'object', properties: { id: { type: 'string', description: 'SP-00012' } }, required: ['id'] } },
   { name: 'spill_stats', description: 'Counts of spilled items by status, target, confidence, day and decade.', inputSchema: { type: 'object', properties: {} } },
@@ -216,7 +242,7 @@ const TOOLS = [
 async function runTool(env, req, name, a) {
   a = a || {};
   if (name === 'spill_protocol') return JSON.parse(ASSETS['protocol.json'].body);
-  if (name === 'spill_check_published') { const c = await checkPublished(a.q); c.spilled = (await (await doFetch(env, '/similar?q=' + encodeURIComponent(clip(a.q, 120)))).json()).hits; return c; }
+  if (name === 'spill_check_published') return await checkPublishedAndSpills(env, a.q);
   if (name === 'spill_get_last_spill' || name === 'get_last_spill') return await (await doFetch(env, '/last_spill?agent=' + encodeURIComponent(a.agent || '') + '&session=' + encodeURIComponent(a.session_id || ''))).json();
   if (name === 'spill_submit') return await (await doFetch(env, '/submit', { method: 'POST', body: JSON.stringify({ items: Array.isArray(a.items) ? a.items : [], batch: { agent: a.agent, session_id: a.session_id, window_from: a.window_from, window_to: a.window_to, catalogue_checked: a.catalogue_checked }, sender: await senderOf(req, env) }) })).json();
   if (name === 'spill_status') return await (await doFetch(env, '/status?id=' + encodeURIComponent(a.id || ''))).json();
@@ -229,7 +255,7 @@ async function mcp(env, req) {
   let m; try { m = await req.json(); } catch (_) { return { jsonrpc: '2.0', id: null, error: { code: -32700, message: 'parse error' } }; }
   const one = async (x) => {
     const id = x.id === undefined ? null : x.id;
-    if (x.method === 'initialize') return { jsonrpc: '2.0', id, result: { protocolVersion: '2025-03-26', serverInfo: { name: 'cedwyn-spill', version: VERSION }, capabilities: { tools: {} }, instructions: 'Spill: from your own conversation with the owner since your last spill (spill_get_last_spill), submit original facts on the Williams family, Tŷ Mawr / Great House Farm, the Cedwyn estate and BP Properties v Buckler that the evidence catalogue does not hold. Call spill_protocol, spill_get_last_spill, spill_check_published per item, then spill_submit.' } };
+    if (x.method === 'initialize') return { jsonrpc: '2.0', id, result: { protocolVersion: '2025-03-26', serverInfo: { name: 'cedwyn-spill', version: VERSION }, capabilities: { tools: {} }, instructions: 'Spill: from your own conversation with the owner since your last spill (spill_get_last_spill), submit original facts on the Williams family, Tŷ Mawr / Great House Farm, the Cedwyn estate and BP Properties v Buckler that the evidence catalogue does not hold. Call spill_protocol and spill_get_last_spill; for each item call spill_check_published and submit only when catalogue_verified, spill_similarity_verified and eligible_to_submit are all true.' } };
     if (x.method === 'notifications/initialized' || (x.method || '').startsWith('notifications/')) return null;
     if (x.method === 'ping') return { jsonrpc: '2.0', id, result: {} };
     if (x.method === 'tools/list') return { jsonrpc: '2.0', id, result: { tools: TOOLS } };
@@ -268,7 +294,7 @@ export default {
         const d = await doFetch(env, '/submit', { method: 'POST', body: JSON.stringify({ items, batch, sender: await senderOf(req, env) }) });
         return json(await d.json(), d.status);
       }
-      if (sub === '/check') { const c = await checkPublished(u.searchParams.get('q')); c.spilled = (await (await doFetch(env, '/similar' + u.search)).json()).hits; return json(c); }
+      if (sub === '/check') return json(await checkPublishedAndSpills(env, u.searchParams.get('q')));
       if (sub === '/status' || sub === '/stats' || sub === '/similar' || sub === '/last_spill') { const d = await doFetch(env, sub + u.search); return json(await d.json(), d.status); }
       if (sub === '/db') { const d = await doFetch(env, '/dbinfo'); return json(await d.json(), d.status); }
       if (sub === '/guestbook') { const d = await doFetch(env, '/guestbook', req.method === 'POST' ? { method: 'POST', body: await req.text() } : undefined); return json(await d.json(), d.status); }
