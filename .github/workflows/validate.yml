@@ -1,0 +1,24 @@
+name: validate-spill
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Verify generated Worker fallback assets
+        run: python3 scripts/build_worker_assets.py --check
+      - name: Compile the asset builder
+        run: python3 -m py_compile scripts/build_worker_assets.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check Worker module syntax
+        run: node --input-type=module --check < worker/index.js
