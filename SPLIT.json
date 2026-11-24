@@ -1,1 +1,20 @@
-{"source":"unclehowell/cedwyn","branch":"section/spill","sha":"a94897c67d11889f4cea66a297c013dd13c92038","copied_utc":"2026-11-05T20:30:25Z"}
+{
+  "source_of_truth": {
+    "repository": "unclehowell/cedwyn-spill",
+    "branch": "main",
+    "mode": "split-repo",
+    "deploy": "repo"
+  },
+  "origin": {
+    "repository": "unclehowell/cedwyn",
+    "branch": "section/spill",
+    "commit": "a94897c67d11889f4cea66a297c013dd13c92038",
+    "copied_utc": "2026-11-05T20:30:25Z"
+  },
+  "public_url": "https://bucklerfamily.estate/spill/",
+  "worker": {
+    "name": "cedwyn-spill",
+    "route": "cedwyn-datro.bucklerfamily.estate/spill*"
+  },
+  "note": "The monorepo branch is historical provenance only. New source changes belong in this dedicated repository."
+}
