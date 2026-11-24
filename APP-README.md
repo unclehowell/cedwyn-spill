@@ -44,6 +44,6 @@ Address: https://bucklerfamily.estate/spill/ (the apex gateway proxies to the in
 
 ## Rollback
 - Page: remove the `spill` entry from themes.json and sections.lock on main (one revert) and rebuild.
-- Backend: delete the Worker route `cedwyn.bucklerfamily.estate/spill*`, or roll the Worker `cedwyn-spill` back to an earlier
+- Backend: delete the Worker route `cedwyn-datro.bucklerfamily.estate/spill*` (keep the apex proxy route if the public address must remain active), or roll the Worker `cedwyn-spill` back to an earlier
   version in its Deployments list. Deleting the Worker deletes its database.
 — Cedwyn editors
