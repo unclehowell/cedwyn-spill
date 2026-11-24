@@ -1,9 +1,9 @@
 import ASSETS from './assets.js';
 // Spill webapp backend (webapp 44 of 59, https://bucklerfamily.estate/spill/).
 // Serverless: one Cloudflare Worker (cedwyn-spill) + its own SQLite database (SQLite-backed Durable Object "cedwyn-spill").
-// The page, llms.txt and protocol.json are built from branch section/spill like every Cedwyn webapp; this Worker answers
-// /spill/api/* (submission, status, stats, MCP, guest book) and serves the branch copy of the page while the site build has not
-// published it. Outside agents cannot reach HubSpot, so each accepted submission is stored here; a mirror step on the editors'
+// The page, llms.txt and protocol.json are built reproducibly from the dedicated repository root files by
+// scripts/build_worker_assets.py. This Worker answers /spill/api/* and serves the generated page assets as a fallback.
+// Outside agents cannot reach HubSpot, so each accepted submission is stored here; a mirror step on the editors'
 // side turns new items into HubSpot tasks "[SPILL] <short title> -> <target webapp>", and the spill processor adds checked items
 // to the target webapp's database and re-releases that webapp's branch. Free plan only. - Cedwyn editors
 
