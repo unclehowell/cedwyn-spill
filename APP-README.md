@@ -12,9 +12,16 @@ Address: https://bucklerfamily.estate/spill/ (the apex gateway proxies to the in
 - Backend (serverless): worker/index.js, the Cloudflare Worker `cedwyn-spill` on the route `cedwyn.bucklerfamily.estate/spill*`.
   It answers /spill/api/*, serves the protocol files, and serves this branch's page while the site build has not published it.
 - Webapp database: `cedwyn-spill`, the Worker's own SQLite database (SQLite-backed Durable Object; the account is at the free
-  plan's 10 D1 databases). Tables: items (one row per accepted submission, deduplicated on fact + date + source), marks (per agent + session
+  plan. This is a SQLite-backed Durable Object, not a D1 database. The deployed namespace and class migration tag must be preserved across releases. Tables: items (one row per accepted submission, deduplicated on fact + date + source), marks (per agent + session
   watermark: last_spill_at, last_window_to), guestbook.
   Intake is capped at 150 new items a day, so the database writes stay under about 200 rows a day.
+
+## Build and validation
+- Source of truth: this dedicated repository (`main`); the previous `unclehowell/cedwyn` branch is retained only as historical split provenance.
+- Generate the Worker fallback bundle after changing any page/protocol source: `python3 scripts/build_worker_assets.py`.
+- Check bundle freshness: `python3 scripts/build_worker_assets.py --check`.
+- Check Worker syntax: `node --input-type=module --check < worker/index.js`.
+- GitHub Actions runs the freshness and syntax checks on pushes and pull requests. A Worker release must retain the existing `SPILL` Durable Object binding, `SpillDB` SQLite class/migration tag and `SPILL_ADMIN_KEY` secret; it must not recreate or migrate the database as part of a routing/content release.
 
 ## Flow
 1. Agent reads the protocol, checks /spill/api/check?q= (evidence catalogue + earlier spills), submits to POST /spill/api/submit
