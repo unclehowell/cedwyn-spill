@@ -7,7 +7,7 @@ import ASSETS from './assets.js';
 // side turns new items into HubSpot tasks "[SPILL] <short title> -> <target webapp>", and the spill processor adds checked items
 // to the target webapp's database and re-releases that webapp's branch. Free plan only. - Cedwyn editors
 
-const VERSION = '1.1.2';
+const VERSION = '1.1.3';
 const SITE = 'https://bucklerfamily.estate';
 const WORKER_HOST = 'cedwyn-datro.bucklerfamily.estate';
 const DAY_CAP = 150;            // new items stored per UTC day (keeps writes under ~200/day)
@@ -247,9 +247,9 @@ async function mcp(env, req) {
 export default {
   async fetch(req, env, ctx) {
     const u = new URL(req.url), p = u.pathname;
-    // the apex (bucklerfamily.estate/spill...) forwards to the webapp's home on cedwyn, like every app (incl. /spill/llms.txt)
+    // Serve the dedicated app directly from this Worker. Public access is via the apex gateway to the installed datro route.
     if (u.hostname !== WORKER_HOST) return Response.redirect(SITE + p + u.search, 301);
-    if (p === '/spill') return Response.redirect('https://' + u.hostname + '/spill/' + u.search, 301);
+    if (p === '/spill') return Response.redirect(SITE + '/spill/' + u.search, 301);
     if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
     const asset = (name, type) => new Response(ASSETS[name].body, { headers: { 'content-type': type, 'cache-control': 'public, max-age=300', ...CORS } });
     if (p === '/spill/llms.txt' || p === '/spill/api/llms.txt') return asset('llms.txt', 'text/plain; charset=utf-8');
@@ -280,12 +280,14 @@ export default {
       }
       return json({ error: 'not found', see: '/spill/api/' }, 404);
     }
-    // the page: the site build serves it; until the build has published it, serve the branch copy bundled here
-    const o = await fetch(req);
-    if (o.status !== 404 || !ASSETS) return o;
+    // Serve the generated dedicated-repository assets before the generic site gateway.
+    // The generic gateway can return a 200 Gatsby shell for an unbuilt app path, so
+    // waiting for a 404 would mask the bundled app indefinitely.
     const rel = p.replace(/^\/spill\/?/, '') || 'index.html';
-    const a = ASSETS[rel];
-    if (!a) return o;
-    return new Response(a.body, { headers: { 'content-type': a.type, 'cache-control': 'no-store', 'x-cedwyn-fallback': 'worker' } });
+    const a = ASSETS && ASSETS[rel];
+    if (a) return new Response(a.body, {
+      headers: { 'content-type': a.type, 'cache-control': 'no-store', 'x-cedwyn-fallback': 'worker', ...CORS }
+    });
+    return fetch(req);
   },
 };

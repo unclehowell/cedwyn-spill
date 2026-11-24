@@ -22,3 +22,5 @@ jobs:
           node-version: "22"
       - name: Check Worker module syntax
         run: node --input-type=module --check < worker/index.js
+      - name: Test Worker routes and page fallback
+        run: node --test tests/worker-routes.test.mjs
