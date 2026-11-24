@@ -9,7 +9,7 @@ Address: https://bucklerfamily.estate/spill/ (the apex gateway proxies to the in
 ## Parts
 - Page: index.html, spill.css, spill.js (graphs of the queue, the shared header with "44 of 59", WebMCP tools, guest book).
 - Protocol: llms.txt and protocol.json (served at /spill/llms.txt and /spill/protocol.json).
-- Backend (serverless): worker/index.js, the Cloudflare Worker `cedwyn-spill` on the route `cedwyn.bucklerfamily.estate/spill*`.
+- Backend (serverless): worker/index.js, the Cloudflare Worker `cedwyn-spill` on the route `cedwyn-datro.bucklerfamily.estate/spill*` (the public apex gateway proxies `/spill*` to this installed route).
   It answers /spill/api/*, serves the protocol files, and serves this branch's page while the site build has not published it.
 - Webapp database: `cedwyn-spill`, the Worker's own SQLite database (SQLite-backed Durable Object; the account is at the free
   plan. This is a SQLite-backed Durable Object, not a D1 database. The deployed namespace and class migration tag must be preserved across releases. Tables: items (one row per accepted submission, deduplicated on fact + date + source), marks (per agent + session
