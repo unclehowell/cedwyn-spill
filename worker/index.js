@@ -1,5 +1,5 @@
 import ASSETS from './assets.js';
-// Spill webapp backend (webapp 44 of 59, https://bucklerfamily.estate/spill/ -> cedwyn.bucklerfamily.estate/spill/).
+// Spill webapp backend (webapp 44 of 59, https://bucklerfamily.estate/spill/).
 // Serverless: one Cloudflare Worker (cedwyn-spill) + its own SQLite database (SQLite-backed Durable Object "cedwyn-spill").
 // The page, llms.txt and protocol.json are built from branch section/spill like every Cedwyn webapp; this Worker answers
 // /spill/api/* (submission, status, stats, MCP, guest book) and serves the branch copy of the page while the site build has not
@@ -7,8 +7,9 @@ import ASSETS from './assets.js';
 // side turns new items into HubSpot tasks "[SPILL] <short title> -> <target webapp>", and the spill processor adds checked items
 // to the target webapp's database and re-releases that webapp's branch. Free plan only. - Cedwyn editors
 
-const VERSION = '1.1.0';
-const SITE = 'https://cedwyn.bucklerfamily.estate';
+const VERSION = '1.1.2';
+const SITE = 'https://bucklerfamily.estate';
+const WORKER_HOST = 'cedwyn-datro.bucklerfamily.estate';
 const DAY_CAP = 150;            // new items stored per UTC day (keeps writes under ~200/day)
 const HOUR_CAP_SENDER = 30;     // items per sender per hour (in-memory, no writes)
 const MAX_BODY = 32768;         // bytes per request
@@ -247,7 +248,7 @@ export default {
   async fetch(req, env, ctx) {
     const u = new URL(req.url), p = u.pathname;
     // the apex (bucklerfamily.estate/spill...) forwards to the webapp's home on cedwyn, like every app (incl. /spill/llms.txt)
-    if (u.hostname !== 'cedwyn.bucklerfamily.estate') return Response.redirect(SITE + p + u.search, 301);
+    if (u.hostname !== WORKER_HOST) return Response.redirect(SITE + p + u.search, 301);
     if (p === '/spill') return Response.redirect('https://' + u.hostname + '/spill/' + u.search, 301);
     if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
     const asset = (name, type) => new Response(ASSETS[name].body, { headers: { 'content-type': type, 'cache-control': 'public, max-age=300', ...CORS } });
