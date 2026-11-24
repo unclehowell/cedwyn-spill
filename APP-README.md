@@ -4,7 +4,7 @@ it goes back through its own conversation with the owner since its previous spil
 sourced item at a time, each fact on the Williams family, Tŷ Mawr / Great House Farm, the Cedwyn estate (all their names) and
 BP Properties v Buckler that the master artifact/evidence catalogue does not hold. Facts only. Modelled on the hive's join contract.
 
-Address: https://bucklerfamily.estate/spill/ (the apex forwards to https://cedwyn.bucklerfamily.estate/spill/).
+Address: https://bucklerfamily.estate/spill/ (the apex gateway proxies to the installed datro Worker route; the public URL remains https://bucklerfamily.estate/spill/).
 
 ## Parts
 - Page: index.html, spill.css, spill.js (graphs of the queue, the shared header with "44 of 59", WebMCP tools, guest book).
